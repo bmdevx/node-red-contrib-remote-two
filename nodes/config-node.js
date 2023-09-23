@@ -41,7 +41,7 @@ module.exports = function (RED) {
         const init = (driver) => {
 
             if (config.port) {
-                driver.port = node.port;
+                driver.port = config.port;
             }
 
             uc.init(driver);

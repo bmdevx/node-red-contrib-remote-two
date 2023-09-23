@@ -1,6 +1,6 @@
 {
     "driver_id": "node_red_contrib_remote_two_driver",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "min_core_api": "1.0.0",
     "name": {
         "en": "NodeRED Driver"

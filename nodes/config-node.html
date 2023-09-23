@@ -1,0 +1,40 @@
+<script type="text/javascript">
+    RED.nodes.registerType('config-node', {
+        category: 'config',
+        defaults: {
+            driver_name: { value: 'NodeRED', required: true },
+            port: { value: 9988, required: true, validate: RED.validators.number() }
+        },
+        label: () => {
+            return this.name || 'Remote Two Config'
+        },
+        color: "#999999",
+        paletteLabel: "Remote Two Config",
+        icon: "font-awesome/fa-list"
+    });
+</script>
+
+<script type="text/html" data-template-name="config-node">
+    <div class="form-row">
+        <label for="node-config-input-driver_name"><i class="fa fa-file-text"></i> Driver Name</label>
+        <input type="text" id="node-config-input-driver_name">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-port"><i class="fa fa-tag"></i> Port</label>
+        <input type="number" id="node-config-input-port">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="config-node">
+    <p>Remote Two Configuration</p>
+    <h3>Settings</h3>
+    <dl class="message-properties">
+        <dt>Driver Name <span class="property-type">string</span></dt>
+        <dd>Integration name for the remote.</dd>
+
+        <dt>Port <span class="property-type">number</span></dt>
+        <dd>Port that data will be transmited on.</dd>
+    </dl>
+    <h3>Details</h3>
+    <p>This node sets up the NodeRED configuration for Remote Two.</p>
+</script>

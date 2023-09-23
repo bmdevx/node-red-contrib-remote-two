@@ -1,0 +1,19 @@
+{
+    "driver_id": "node_red_contrib_remote_two_driver",
+    "version": "0.0.1",
+    "min_core_api": "1.0.0",
+    "name": {
+        "en": "NodeRED Driver"
+    },
+    "description": {
+        "en": "NodeRED Integration"
+    },
+    "port": "9988",
+    "developer": {
+        "name": "bmdevx",
+        "email": "darkarcanumapps@gmail.com",
+        "url": "https://github.com/bmdevx/node-red-contrib-remote-two"
+    },
+    "home_page": "https://github.com/bmdevx/node-red-contrib-remote-two",
+    "release_date": "2023-09-22"
+}

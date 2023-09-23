@@ -1,0 +1,37 @@
+{
+  "name": "node-red-contrib-remote-two",
+  "version": "0.0.1",
+  "description": "Remote Two integration for NodeRED",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "node-red": {
+    "nodes": {
+      "config-node": "nodes/config-node.js",
+      "button-node": "nodes/button-node.js"
+    }
+  },
+  "author": "bmdevx",
+  "license": "Apache-2.0",
+  "keywords": [
+    "node-red",
+    "remote two",
+    "remote-two",
+    "unfolded circle",
+    "unfolded-circle",
+    "integration"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bmdevx/node-red-contrib-remote-two.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bmdevx/node-red-contrib-remote-two/issues"
+  },
+  "homepage": "https://github.com/bmdevx/node-red-contrib-remote-two#readme",
+  "devDependencies": {
+    "node-red": "^3.1.0",
+    "node-red-node-test-helper": "^0.3.2",
+    "should": "^13.2.3"
+  }
+}

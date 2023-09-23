@@ -1,0 +1,47 @@
+<script type="text/javascript">
+    RED.nodes.registerType('button-node', {
+        category: 'remote-two',
+        defaults: {
+            name: { value: '', required: true },
+            area: { value: '', required: false },
+            config: { type: 'config-node', required: true },
+
+        },
+        inputs: 0,
+        outputs: 1,
+        label: function () {
+            return this.name || 'Remote Two Button'
+        },
+        color: "#999999",
+        paletteLabel: "Remote Two Button",
+        icon: "font-awesome/circle-dot"
+    });
+</script>
+
+<script type="text/html" data-template-name="create-node">
+    <div class="form-row" style="display: -webkit-flex;">
+        <label for="node-input-name" style="width: 10em"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <div class="form-row" style="display: -webkit-flex;">
+        <label for="node-input-area" style="width: 10em"><i class="fa fa-tag"></i> Area</label>
+        <input type="text" id="node-input-area" placeholder="Area">
+    </div>
+
+    <div class="form-row" style="display: -webkit-flex;">
+        <label for="node-input-config" style="width: 10em"><i class="fa fa-cog"></i> Config</label>
+        <input type="text" id="node-input-config">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="create-node">
+    <p>Button Press from Remote Two</p>
+    <h3>Output</h3>
+    <dl class="message-properties">
+        <dt>msg <span class="property-type">object</span></dt>
+        <dd>Returns a msg with a payload of the parameters from the push.</dd>
+    </dl>
+    <h3>Details</h3>
+    <p>This node outputs when it receives a push command from the Remote Two</p>
+</script>

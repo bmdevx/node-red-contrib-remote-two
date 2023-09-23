@@ -3,7 +3,7 @@ const fsp = require('fs').promises;
 const path = require('path');
 const uc = require('../uc-integration-api/index');
 
-const DRIVER_PATH = '../driver.json';
+const DRIVER_PATH = path.join(__dirname, '..', 'driver.json');
 
 
 const checkExists = (path) => new Promise(r => fs.access(path, fs.F_OK, e => r(!e)));
@@ -16,11 +16,7 @@ module.exports = function (RED) {
         const node = this;
         node.entities = new Map();
 
-        var initiated = false;
-
-        node.isInitialized = () => {
-            return initiated;
-        };
+        node.isInitialized = false;
 
         const loadDriver = (filePath) => {
             return new Promise((resolve, reject) => {
@@ -44,7 +40,7 @@ module.exports = function (RED) {
 
         const init = (driver) => {
 
-            if (node.port) {
+            if (config.port) {
                 driver.port = node.port;
             }
 
@@ -109,55 +105,67 @@ module.exports = function (RED) {
                 }
             });
 
-
-            node.addEntity = (entityNode) => {
-                const entity = entityNode.entity;
-
-                if (entity instanceof uc.Entities.Entity) {
-                    if (entity.id) {
-                        if (node.entities.has(entity.id)) {
-                            node.warn(`Entity ${entity.id} has already been added`);
-                        } else {
-                            node.entities.set(entity.id);
-                            uc.availableEntities.addEntity(enode);
-                        }
-                    } else {
-                        node.warn(`Entity does not have an id`);
-                    }
-                } else {
-                    node.warn(`Not a valid entity`);
-                }
+            if (node.entities.size > 0) {
+                node.entities.forEach((enode, key) => {
+                    uc.availableEntities.addEntity(enode.entity);
+                })
             }
 
-            node.updateEntity = (entity, attrs) => {
+            node.isInitialized = true;
+        };
+
+        node.addEntity = (entityNode) => {
+            const entity = entityNode.entity;
+
+            if (entity instanceof uc.Entities.Entity) {
                 if (entity.id) {
                     if (node.entities.has(entity.id)) {
-                        if (attrs instanceof Map) {
-                            uc.configuredEntities.updateEntityAttributes(entity.id, attrs);
-                        } else {
-                            node.warn(`Entity ${entity.id} has not been added`);
-                        }
+                        node.warn(`Entity ${entity.id} has already been added`);
                     } else {
-                        node.warn(`Entity ${entity.id} has not been added`);
+                        node.entities.set(entity.id, entityNode);
+
+                        if (node.isInitialized) {
+                            uc.availableEntities.addEntity(enode);
+                        }
                     }
                 } else {
                     node.warn(`Entity does not have an id`);
                 }
+            } else {
+                node.warn(`Not a valid entity`);
+            }
+        }
+
+        node.updateEntity = (entity, attrs) => {
+            if (!node.isInitialized) {
+                node.warn('Config Node not initialized');
             }
 
+            if (entity.id) {
+                if (node.entities.has(entity.id)) {
+                    if (attrs instanceof Map) {
+                        uc.configuredEntities.updateEntityAttributes(entity.id, attrs);
+                    } else {
+                        node.warn(`Entity ${entity.id} has not been added`);
+                    }
+                } else {
+                    node.warn(`Entity ${entity.id} has not been added`);
+                }
+            } else {
+                node.warn(`Entity does not have an id`);
+            }
+        }
 
-            initiated = true;
-        };
 
-        checkExists(configFilePath).then(exists => {
-            if (exists) {
+        fs.access(DRIVER_PATH, fs.F_OK, e => {
+            if (!e) {
                 loadDriver(DRIVER_PATH)
                     .then(init)
                     .catch(e => {
                         node.error(e);
                     });
             } else {
-                node.warn('driver not found');
+                node.warn('Driver config not found');
             }
         });
     }

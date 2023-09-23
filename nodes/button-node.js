@@ -8,11 +8,14 @@ module.exports = function (RED) {
 
         var configNode = (typeof config.config === 'string') ? RED.nodes.getNode(config.config) : config.config;
 
+        if (configNode === undefined) {
+            node.warn('Config Node not found');
+            return;
+        }
 
-        const entityId = '';
-        const entityName = '';
-        const entityArea = '';
-
+        const entityId = config.name;
+        const entityName = config.name;
+        const entityArea = config.area;
 
         const entity = new Button(
             entityId,
@@ -34,16 +37,11 @@ module.exports = function (RED) {
             }
         };
 
+        configNode.addEntity(this);
+
         node.on('close', (done) => {
             done();
         });
-
-
-        if (!configNode.isInitialized()) {
-            node.warn('Remote Two config-node is not initialized');
-            done();
-            return;
-        }
     }
 
     RED.nodes.registerType("button-node", ButtonNode);

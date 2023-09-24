@@ -1,0 +1,71 @@
+<script type="text/javascript">
+    RED.nodes.registerType('switch-node', {
+        category: 'remote-two',
+        defaults: {
+            name: { value: '', required: false },
+            config: { type: 'config-node', required: true },
+            entity_id: { value: '', required: true },
+            device_class: { value: '', required: false },
+            area: { value: '', required: false },
+        },
+        inputs: 0,
+        outputs: 1,
+        label: function () {
+            return this.name || 'Remote Two Button'
+        },
+        color: "#999999",
+        paletteLabel: "Remote Two Switch",
+        icon: "font-awesome/toggle-off"
+    });
+</script>
+
+<script type="text/html" data-template-name="create-node">
+    <div class="form-row" style="display: -webkit-flex;">
+        <label for="node-input-name" style="width: 10em"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Switch">
+    </div>
+
+    <div class="form-row" style="display: -webkit-flex;">
+        <label for="node-input-config" style="width: 10em"><i class="fa fa-cog"></i> Config</label>
+        <input type="text" id="node-input-config">
+    </div>
+
+    <div class="form-row" style="display: -webkit-flex;">
+        <label for="node-input-entity_id" style="width: 10em"><i class="fa fa-tag"></i> Switch ID</label>
+        <input type="text" id="node-input-entity_id" placeholder="switch_1234" required pattern="[a-zA-Z0-9_]+">
+    </div>
+
+    <div class="form-row" style="display: -webkit-flex;">
+        <label for="node-input-device_class" style="width: 10em"><i class="fa fa-tag"></i> Device Class</label>
+        <input type="text" id="node-input-device_class" placeholder="virtual_switch" required pattern="[a-zA-Z0-9_]+">
+    </div>
+
+    <div class="form-row" style="display: -webkit-flex;">
+        <label for="node-input-area" style="width: 10em"><i class="fa fa-tag"></i> Area</label>
+        <input type="text" id="node-input-area" placeholder="living room">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="create-node">
+    <p>Virtual Switch for Remote Two</p>
+    <h3>Input</h3>
+    <dl class="message-properties">
+        <dt>msg <span class="property-type">object</span></dt>
+        <dd>Accepts a msg with a payload of 'on', 'off', or 'toggle' as string or true, false or null as a bool.</dd>
+    </dl>
+    <h3>Output</h3>
+    <dl class="message-properties">
+        <dt>msg.payload <span class="property-type">string</span></dt>
+        <dd>Value of 'on', 'off', or 'toggle'</dd>
+    </dl>
+    <dl class="message-properties">
+        <dt>msg.params <span class="property-type">object</span></dt>
+        <dd>Value of the command parameters</dd>
+    </dl>
+    <dl class="message-properties">
+        <dt>msg.state <span class="property-type">bool</span></dt>
+        <dd>Value of the current state of the switch</dd>
+    </dl>
+    <h3>Details</h3>
+    <p>This node outputs when it receives a command from the Remote Two</p>
+</script>

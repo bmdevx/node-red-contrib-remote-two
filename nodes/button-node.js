@@ -13,21 +13,22 @@ module.exports = function (RED) {
             return;
         }
 
-        const entityId = config.name;
-        const entityName = config.name;
-        const entityArea = config.area;
+        node.getAttrs = () => {
+            return new Map([
+                [Button.ATTRIBUTES.STATE, Button.STATES.AVAILABLE]
+            ]);
+        };
 
-        const entity = new Button(
-            entityId,
-            entityName,
-            entityArea
+        node.entity = new Button(
+            config.entity_id || configNode.generateEntityID('button'),
+            config.name,
+            config.area
         );
-
-        node.entity = entity;
 
         node.command = (cmdId, params) => {
             if (cmdId === Button.COMMANDS.PUSH) {
-                node.send(new {
+                node.send({
+                    cmd: cmdId,
                     payload: params
                 })
 

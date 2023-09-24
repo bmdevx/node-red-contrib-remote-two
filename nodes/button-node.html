@@ -2,10 +2,10 @@
     RED.nodes.registerType('button-node', {
         category: 'remote-two',
         defaults: {
-            name: { value: '', required: true },
-            area: { value: '', required: false },
+            name: { value: '', required: false },
             config: { type: 'config-node', required: true },
-
+            entity_id: { value: '', required: true },
+            area: { value: '', required: false },
         },
         inputs: 0,
         outputs: 1,
@@ -21,17 +21,22 @@
 <script type="text/html" data-template-name="create-node">
     <div class="form-row" style="display: -webkit-flex;">
         <label for="node-input-name" style="width: 10em"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-
-    <div class="form-row" style="display: -webkit-flex;">
-        <label for="node-input-area" style="width: 10em"><i class="fa fa-tag"></i> Area</label>
-        <input type="text" id="node-input-area" placeholder="Area">
+        <input type="text" id="node-input-name" placeholder="Button">
     </div>
 
     <div class="form-row" style="display: -webkit-flex;">
         <label for="node-input-config" style="width: 10em"><i class="fa fa-cog"></i> Config</label>
         <input type="text" id="node-input-config">
+    </div>
+
+    <div class="form-row" style="display: -webkit-flex;">
+        <label for="node-input-entity_id" style="width: 10em"><i class="fa fa-tag"></i> Button ID</label>
+        <input type="text" id="node-input-entity_id" placeholder="button_1234" required pattern="[a-zA-Z0-9_]+">
+    </div>
+
+    <div class="form-row" style="display: -webkit-flex;">
+        <label for="node-input-area" style="width: 10em"><i class="fa fa-tag"></i> Area</label>
+        <input type="text" id="node-input-area" placeholder="living room">
     </div>
 </script>
 
@@ -39,8 +44,12 @@
     <p>Button Press from Remote Two</p>
     <h3>Output</h3>
     <dl class="message-properties">
-        <dt>msg <span class="property-type">object</span></dt>
-        <dd>Returns a msg with a payload of the parameters from the push.</dd>
+        <dt>msg.payload <span class="property-type">object</span></dt>
+        <dd>Value of the parameters of the command</dd>
+    </dl>
+    <dl class="message-properties">
+        <dt>msg.cmd <span class="property-type">object</span></dt>
+        <dd>Value of the command ID</dd>
     </dl>
     <h3>Details</h3>
     <p>This node outputs when it receives a push command from the Remote Two</p>

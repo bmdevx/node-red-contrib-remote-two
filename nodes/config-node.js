@@ -5,9 +5,6 @@ const uc = require('../uc-integration-api/index');
 
 const DRIVER_PATH = path.join(__dirname, '..', 'driver.json');
 
-
-const checkExists = (path) => new Promise(r => fs.access(path, fs.F_OK, e => r(!e)));
-
 module.exports = function (RED) {
 
     function ConfigNode(config) {
@@ -39,9 +36,12 @@ module.exports = function (RED) {
         }
 
         const init = (driver) => {
-
             if (config.port) {
                 driver.port = config.port;
+            }
+
+            if (config.driver_name) {
+                driver.device_id = config.driver_name;
             }
 
             uc.init(driver);
@@ -87,7 +87,7 @@ module.exports = function (RED) {
 
             // handle commands coming from the core
             uc.on(uc.EVENTS.ENTITY_COMMAND, async (wsHandle, entityId, entityType, cmdId, params) => {
-                console.log(`ENTITY COMMAND: ${entityId} ${entityType} ${cmdId} ${JSON.stringify(params, null, 4)}`);
+                node.log(`ENTITY COMMAND: ${entityId} ${entityType} ${cmdId} ${JSON.stringify(params, null, 4)}`);
 
                 if (node.entities.has(entityId)) {
                     const enode = node.entities.get(entityId);
@@ -136,20 +136,19 @@ module.exports = function (RED) {
             }
         }
 
-        node.updateEntity = (entity, attrs) => {
+        node.updateEntity = (entityNode) => {
+            const entity = entityNode.entity;
+
             if (!node.isInitialized) {
                 node.warn('Config Node not initialized');
+                return;
             }
 
             if (entity.id) {
                 if (node.entities.has(entity.id)) {
-                    if (attrs instanceof Map) {
-                        uc.configuredEntities.updateEntityAttributes(entity.id, attrs);
-                    } else {
-                        node.warn(`Entity ${entity.id} has not been added`);
-                    }
+                    uc.configuredEntities.updateEntityAttributes(entity.id, entityNode.getAttrs());
                 } else {
-                    node.warn(`Entity ${entity.id} has not been added`);
+                    node.warn(`Entity ${entity.id} is not found`);
                 }
             } else {
                 node.warn(`Entity does not have an id`);
@@ -161,13 +160,29 @@ module.exports = function (RED) {
             if (!e) {
                 loadDriver(DRIVER_PATH)
                     .then(init)
-                    .catch(e => {
-                        node.error(e);
-                    });
+                    .catch(node.error);
             } else {
                 node.warn('Driver config not found');
             }
         });
+
+        node.generateEntityID = (type) => {
+            const getRandom = () => {
+                const chars = "0123456789ABCDEF";
+                var rs = '';
+                for (var i = 0; i < 6; i++) {
+                    rs += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                return rs;
+            };
+
+            while (true) {
+                var entity_id = `${(type || 'entity')}_${getRandom()}`;
+                if (!this.entities.has(entity_id)) {
+                    return entity_id;
+                }
+            }
+        }
     }
 
     RED.nodes.registerType("config-node", ConfigNode);

@@ -9,7 +9,7 @@ module.exports = function (RED) {
         var configNode = (typeof config.config === 'string') ? RED.nodes.getNode(config.config) : config.config;
 
         if (configNode === undefined) {
-            node.warn('Config Node not found');
+            node.error('Config Node not found');
             return;
         }
 
@@ -18,12 +18,6 @@ module.exports = function (RED) {
                 [Button.ATTRIBUTES.STATE, Button.STATES.AVAILABLE]
             ]);
         };
-
-        node.entity = new Button(
-            config.entity_id || configNode.generateEntityID('button'),
-            config.name,
-            config.area
-        );
 
         node.command = (cmdId, params) => {
             if (cmdId === Button.COMMANDS.PUSH) {
@@ -38,11 +32,17 @@ module.exports = function (RED) {
             }
         };
 
-        configNode.addEntity(this);
-
         node.on('close', (done) => {
             done();
         });
+
+        node.entity = new Button(
+            config.entity_id || configNode.generateEntityID('button'),
+            config.name,
+            config.area
+        );
+
+        configNode.addEntity(this);
     }
 
     RED.nodes.registerType("button-node", ButtonNode);

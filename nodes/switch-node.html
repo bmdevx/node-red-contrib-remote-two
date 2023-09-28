@@ -4,11 +4,10 @@
         defaults: {
             name: { value: '', required: false },
             config: { type: 'config-node', required: true },
-            entity_id: { value: '', required: true },
-            device_class: { value: '', required: false },
+            entity_id: { value: '', required: true, validate: RED.validators.regex(/[a-zA-Z0-9_]+/) },
             area: { value: '', required: false },
         },
-        inputs: 0,
+        inputs: 1,
         outputs: 1,
         label: function () {
             return this.name || 'Remote Two Button'
@@ -19,7 +18,7 @@
     });
 </script>
 
-<script type="text/html" data-template-name="create-node">
+<script type="text/html" data-template-name="switch-node">
     <div class="form-row" style="display: -webkit-flex;">
         <label for="node-input-name" style="width: 10em"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Switch">
@@ -36,17 +35,12 @@
     </div>
 
     <div class="form-row" style="display: -webkit-flex;">
-        <label for="node-input-device_class" style="width: 10em"><i class="fa fa-tag"></i> Device Class</label>
-        <input type="text" id="node-input-device_class" placeholder="virtual_switch" required pattern="[a-zA-Z0-9_]+">
-    </div>
-
-    <div class="form-row" style="display: -webkit-flex;">
         <label for="node-input-area" style="width: 10em"><i class="fa fa-tag"></i> Area</label>
         <input type="text" id="node-input-area" placeholder="living room">
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="create-node">
+<script type="text/x-red" data-help-name="switch-node">
     <p>Virtual Switch for Remote Two</p>
     <h3>Input</h3>
     <dl class="message-properties">

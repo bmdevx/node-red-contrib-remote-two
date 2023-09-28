@@ -8,35 +8,11 @@ module.exports = function (RED) {
         const configNode = (typeof config.config === 'string') ? RED.nodes.getNode(config.config) : config.config;
 
         if (configNode === undefined) {
-            node.warn('Config Node not found');
+            node.error('Config Node not found');
             return;
         }
 
         node.switch_state = false;
-
-        node.getAttrs = () => {
-            var state;
-            if (node.switch_state === true)
-                state = Switch.STATES.ON;
-            else if (node.switch_state === false)
-                state = Switch.STATES.OFF;
-            else
-                state = Switch.STATES.UNKNOWN;
-
-            return new Map([
-                [Switch.ATTRIBUTES.STATE, state]
-            ]);
-        };
-
-        node.entity = new Switch(
-            config.entity_id || configNode.generateEntityID('switch'),
-            config.name,
-            [Switch.FEATURES.ON_OFF, Switch.FEATURES.TOGGLE],
-            node.getAttrs(),
-            config.device_class || 'virtual_switch',
-            undefined,
-            config.area || null
-        );
 
         const setState = (cmd, updateEntity = false) => {
             if (typeof cmd === 'string' || cmd instanceof String) {
@@ -58,10 +34,32 @@ module.exports = function (RED) {
                 this.switch_state = !this.switch_state;
             }
 
-            if (updateEntity) {
+            if (this.switch_state) {
+                this.status({ fill: "green", shape: "dot", text: "On" });
+            } else {
+                this.status({ fill: "red", shape: "dot", text: "Off" });
+            }
+
+            if (node.entity !== undefined && updateEntity) {
                 configNode.updateEntity(this);
             }
         }
+
+        setState(false);
+
+        node.getAttrs = () => {
+            var state;
+            if (node.switch_state === true)
+                state = Switch.STATES.ON;
+            else if (node.switch_state === false)
+                state = Switch.STATES.OFF;
+            else
+                state = Switch.STATES.UNKNOWN;
+
+            return new Map([
+                [Switch.ATTRIBUTES.STATE, state]
+            ]);
+        };
 
         node.command = (cmdId, params) => {
             if (Object.values(Switch.COMMANDS).includes(cmdId)) {
@@ -87,6 +85,16 @@ module.exports = function (RED) {
         node.on('close', (done) => {
             done();
         });
+
+        node.entity = new Switch(
+            config.entity_id || configNode.generateEntityID('switch'),
+            config.name,
+            [Switch.FEATURES.ON_OFF, Switch.FEATURES.TOGGLE],
+            node.getAttrs(),
+            'switch',
+            undefined,
+            config.area || null
+        );
 
         configNode.addEntity(this);
     }

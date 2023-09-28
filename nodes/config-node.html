@@ -3,8 +3,9 @@
         category: 'config',
         defaults: {
             name: { value: '', required: false },
-            driver_name: { value: 'node_red', required: true },
-            port: { value: 9988, required: true, validate: RED.validators.number() }
+            driver_name: { value: 'node_red', required: true, validate: RED.validators.regex(/[a-zA-Z0-9_]+/) },
+            port: { value: 9988, required: true, validate: RED.validators.number() },
+            publish_service: { value: true, required: true }
         },
         label: () => {
             return this.name || 'Remote Two Config'
@@ -16,17 +17,21 @@
 </script>
 
 <script type="text/html" data-template-name="config-node">
-    <div class="form-row">
-        <label for="node-config-input-name"><i class="fa fa-file-text"></i> Name</label>
+    <div class="form-row" style="display: -webkit-flex;">
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-config-input-name">
     </div>
-    <div class="form-row">
-        <label for="node-config-input-driver_name"><i class="fa fa-file-text"></i> Driver Name</label>
+    <div class="form-row" style="display: -webkit-flex;">
+        <label for="node-config-input-driver_name"><i class="fa fa-tag"></i> Driver Name</label>
         <input type="text" id="node-config-input-driver_name" required pattern="[a-zA-Z0-9_]+">
     </div>
-    <div class="form-row">
+    <div class="form-row" style="display: -webkit-flex;">
         <label for="node-config-input-port"><i class="fa fa-tag"></i> Port</label>
         <input type="number" id="node-config-input-port">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-publish_service"><i class="fa fa-tag"></i> Publish Service</label>
+        <input type="checkbox" id="node-config-input-publish_service">
     </div>
 </script>
 

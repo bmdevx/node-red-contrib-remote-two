@@ -1,6 +1,6 @@
 {
     "driver_id": "node_red",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "min_core_api": "1.0.0",
     "name": {
         "en": "NodeRED Driver"

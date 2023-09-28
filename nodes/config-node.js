@@ -2,11 +2,12 @@ const fs = require('fs');
 const fsp = require('fs').promises;
 const path = require('path');
 const uc = require('../uc-integration-api/index');
+const { Bonjour } = require('bonjour-service');
+const os = require('os');
 
 const DRIVER_PATH = path.join(__dirname, '..', 'driver.json');
 
 module.exports = function (RED) {
-
     function ConfigNode(config) {
         RED.nodes.createNode(this, config);
 
@@ -35,6 +36,55 @@ module.exports = function (RED) {
             });
         }
 
+
+        node.startMdnsPublishing = (driver) => {
+            if (!node.bonjour) {
+                node.bonjour = new Bonjour();
+            }
+
+            if (node.bonjourService) {
+                node.stopMdnsPublishing();
+            }
+
+            node.bonjourService = node.bonjour.publish({
+                name: driver.driver_id,
+                host: os.hostname().split(".")[0] + ".local.",
+                type: "uc-integration",
+                port: driver.port,
+                txt: {
+                    name: driver.name,
+                    ver: driver.version,
+                    developer: driver.developer.name
+                }
+            });
+        };
+
+        node.stopMdnsPublishing = () => {
+            if (node.bonjourService) {
+                node.bonjourService.stop();
+            }
+        };
+
+
+        node.generateEntityID = (type) => {
+            const getRandom = () => {
+                const chars = "0123456789ABCDEF";
+                var rs = '';
+                for (var i = 0; i < 6; i++) {
+                    rs += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                return rs;
+            };
+
+            while (true) {
+                var entity_id = `${(type || 'entity')}_${getRandom()}`;
+                if (!this.entities.has(entity_id)) {
+                    return entity_id;
+                }
+            }
+        }
+
+
         const init = (driver) => {
             if (config.port) {
                 driver.port = config.port;
@@ -43,6 +93,8 @@ module.exports = function (RED) {
             if (config.driver_name) {
                 driver.device_id = config.driver_name;
             }
+
+            process.env['UC_DISABLE_MDNS_PUBLISH'] = 'true';
 
             uc.init(driver);
 
@@ -111,8 +163,13 @@ module.exports = function (RED) {
                 })
             }
 
+            if (config.publish_service === true) {
+                node.startMdnsPublishing(driver);
+            }
+
             node.isInitialized = true;
         };
+
 
         node.addEntity = (entityNode) => {
             const entity = entityNode.entity;
@@ -156,6 +213,12 @@ module.exports = function (RED) {
         }
 
 
+        node.on('close', done => {
+            node.stopMdnsPublishing();
+            done();
+        });
+
+
         fs.access(DRIVER_PATH, fs.F_OK, e => {
             if (!e) {
                 loadDriver(DRIVER_PATH)
@@ -165,24 +228,6 @@ module.exports = function (RED) {
                 node.warn('Driver config not found');
             }
         });
-
-        node.generateEntityID = (type) => {
-            const getRandom = () => {
-                const chars = "0123456789ABCDEF";
-                var rs = '';
-                for (var i = 0; i < 6; i++) {
-                    rs += chars.charAt(Math.floor(Math.random() * chars.length));
-                }
-                return rs;
-            };
-
-            while (true) {
-                var entity_id = `${(type || 'entity')}_${getRandom()}`;
-                if (!this.entities.has(entity_id)) {
-                    return entity_id;
-                }
-            }
-        }
     }
 
     RED.nodes.registerType("config-node", ConfigNode);

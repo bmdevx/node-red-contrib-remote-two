@@ -146,7 +146,8 @@ module.exports = function (RED) {
                     const entity = enode.entity;
 
                     if (entity.entity_type == entityType) {
-                        await uc.acknowledgeCommand(wsHandle, enode.command(cmdId, params));
+                        await uc.acknowledgeCommand(wsHandle,
+                            enode.command ? enode.command(cmdId, params) : uc.STATUS_CODES.OK);
                     } else {
                         node.warn(`Entity ${entity.name}(${entityId}) does not match type ${entityType}`);
                         await uc.acknowledgeCommand(wsHandle, uc.STATUS_CODES.BAD_REQUEST);
@@ -215,6 +216,12 @@ module.exports = function (RED) {
 
         node.on('close', done => {
             node.stopMdnsPublishing();
+
+            if (node.bonjour) {
+                node.bonjour.destroy();
+                node.bonjour = null;
+            }
+
             done();
         });
 

@@ -1,6 +1,6 @@
 {
     "driver_id": "node_red",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "min_core_api": "1.0.0",
     "name": {
         "en": "NodeRED Driver"
@@ -15,5 +15,5 @@
         "url": "https://github.com/bmdevx/node-red-contrib-remote-two"
     },
     "home_page": "https://github.com/bmdevx/node-red-contrib-remote-two",
-    "release_date": "2023-09-24"
+    "release_date": "2023-09-30"
 }

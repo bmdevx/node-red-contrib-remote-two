@@ -1,0 +1,152 @@
+<script type="text/javascript">
+    RED.nodes.registerType('sensor-node', {
+        category: 'remote-two',
+        defaults: {
+            name: { value: '', required: false },
+            config: { type: 'config-node', required: true },
+            entity_id: { value: '', required: true, validate: RED.validators.regex(/[a-zA-Z0-9_]+/) },
+            device_class: { value: 'temperature', required: true },
+            custom_unit: { value: '', required: false },
+            native_unit: { value: '°F', required: false },
+            decimals: { value: 0, required: false, validate: RED.validators.number() },
+            min_value: { value: null, required: false },
+            max_value: { value: null, required: false },
+            area: { value: '', required: false },
+        },
+        oneditprepare: () => {
+            $("#node-input-device_class").typedInput({
+                types: [
+                    {
+                        value: "temperature",
+                        options: [
+                            { value: "custom", label: "Custom" },
+                            { value: "battery", label: "Battery" },
+                            { value: "current", label: "Current" },
+                            { value: "energy", label: "Energy" },
+                            { value: "humidity", label: "Humidity" },
+                            { value: "power", label: "Power" },
+                            { value: "temperature", label: "Temperature" },
+                            { value: "voltage", label: "Voltage" }
+                        ]
+                    }
+                ]
+            })
+                .on('change', function (event, type, value) {
+                    if (value === "custom") {
+                        $(".node-config-input-custom_unit-row").show();
+                    } else {
+                        $(".node-config-input-custom_unit-row").hide();
+                    }
+
+                    if (value === "temperature") {
+                        $(".node-config-input-native_unit-row").show();
+                    } else {
+                        $(".node-config-input-native_unit-row").hide();
+                    }
+                });
+
+            $("#node-input-native_unit").typedInput({
+                types: [
+                    {
+                        value: "°F",
+                        options: [
+                            { value: "°F", label: "°F" },
+                            { value: "°C", label: "°C" }
+                        ]
+                    }
+                ]
+            });
+
+
+
+            // $("#node-input-device_class").change(() => {
+            //     var value = $("#node-input-device_class").value();
+
+            //     if (value === "custom") {
+            //         $(".node-config-input-custom_unit-row").show();
+            //     } else {
+            //         $(".node-config-input-custom_unit-row").hide();
+            //     }
+
+            //     if (value === "temperature") {
+            //         $(".node-config-input-native_unit-row").show();
+            //     } else {
+            //         $(".node-config-input-native_unit-row").hide();
+            //     }
+            // });
+            // $("#node-input-device_class").change();
+
+        },
+        inputs: 1,
+        outputs: 0,
+        label: function () {
+            return this.name || 'Remote Two Sensor'
+        },
+        color: "#999999",
+        paletteLabel: "Remote Two Sensor",
+        icon: "font-awesome/circle"
+    });
+</script>
+
+<script type="text/html" data-template-name="sensor-node">
+    <div class="form-row" style="display: -webkit-flex;">
+        <label for="node-input-name" style="width: 10em"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Sensor">
+    </div>
+
+    <div class="form-row" style="display: -webkit-flex;">
+        <label for="node-input-config" style="width: 10em"><i class="fa fa-cog"></i> Config</label>
+        <input type="text" id="node-input-config">
+    </div>
+
+    <div class="form-row" style="display: -webkit-flex;">
+        <label for="node-input-entity_id" style="width: 10em"><i class="fa fa-tag"></i> Sensor ID</label>
+        <input type="text" id="node-input-entity_id" placeholder="sensor_1234" required pattern="[a-zA-Z0-9_]+">
+    </div>
+
+    <div class="form-row" style="display: -webkit-flex;">
+        <label for="node-input-device_class" style="width: 10em"><i class="fa fa-tag"></i> Device Class</label>
+        <input type="text" id="node-input-device_class">
+    </div>
+    
+    <div class="form-row node-config-input-custom_unit-row hide" style="display: -webkit-flex;">
+        <label for="node-input-custom_unit" style="width: 10em"><i class="fa fa-tag"></i> Custom Unit</label>
+        <input type="text" id="node-input-custom_unit">
+    </div>
+
+    <div class="form-row node-config-input-native_unit-row hide" style="display: -webkit-flex;">
+        <label for="node-input-native_unit" style="width: 10em"><i class="fa fa-tag"></i> Native Unit</label>
+        <input type="text" id="node-input-native_unit">
+    </div>
+
+    <div class="form-row" style="display: -webkit-flex;">
+        <label for="node-input-decimals" style="width: 10em"><i class="fa fa-tag"></i> Decimals</label>
+        <input type="number" id="node-input-decimals">
+    </div>
+
+    <div class="form-row" style="display: -webkit-flex;">
+        <label for="node-input-min_value" style="width: 10em"><i class="fa fa-tag"></i> Min Value</label>
+        <input type="number" id="node-input-min_value">
+    </div>
+
+    <div class="form-row" style="display: -webkit-flex;">
+        <label for="node-input-max_value" style="width: 10em"><i class="fa fa-tag"></i> Max Value</label>
+        <input type="number" id="node-input-max_value">
+    </div>
+
+    <div class="form-row" style="display: -webkit-flex;">
+        <label for="node-input-area" style="width: 10em"><i class="fa fa-tag"></i> Area</label>
+        <input type="text" id="node-input-area" placeholder="living room">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="sensor-node">
+    <p>Virtual Sensor for Remote Two</p>
+    <h3>Input</h3>
+    <dl class="message-properties">
+        <dt>msg <span class="property-type">object</span></dt>
+        <dd>Accepts a msg with a payload of the configured unit type.</dd>
+    </dl>
+    <h3>Details</h3>
+    <p>This node takes in a sensor value to send to the Remote Two</p>
+</script>

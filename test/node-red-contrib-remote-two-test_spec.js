@@ -3,12 +3,14 @@ const helper = require("node-red-node-test-helper");
 const nrt_config = require("../nodes/config-node");
 const nrt_button = require("../nodes/button-node");
 const nrt_switch = require("../nodes/switch-node");
+const nrt_sensor = require("../nodes/sensor-node");
 
 helper.init(require.resolve('node-red'));
 
 const CONFIG_ID = 'ncfg';
 const BUTTON_ID = 'button_1'
 const SWITCH_ID = 'switch_1'
+const SENSOR_TEMP_1 = 'sensor_temp_1'
 
 describe('Remote Two Nodes', function () {
 
@@ -22,7 +24,7 @@ describe('Remote Two Nodes', function () {
     });
 
     it('should be loaded', function (done) {
-        var flow = [{ id: CONFIG_ID, type: "config-node", name: "config-node", port: 9999, driver_name: "node_red" },
+        var flow = [{ id: CONFIG_ID, type: "config-node", name: "config-node", port: 9999, driver_name: "node_red", publish_service: true },
         { id: "b1", type: "button-node", name: "Button Node", entity_id: BUTTON_ID, config: CONFIG_ID, area: "test" }];
 
         helper.load([nrt_config, nrt_button], flow, function () {
@@ -37,7 +39,7 @@ describe('Remote Two Nodes', function () {
     }).timeout(60000);
 
     it('button test', function (done) {
-        var flow = [{ id: CONFIG_ID, type: "config-node", name: "config-node", port: 9988, driver_name: "node_red" },
+        var flow = [{ id: CONFIG_ID, type: "config-node", name: "config-node", port: 9988, driver_name: "node_red", publish_service: true },
         { id: "b1Out", type: "helper" },
         { id: "b1", type: "button-node", name: "Button Node", entity_id: BUTTON_ID, config: CONFIG_ID, area: "test", wires: [["b1Out"]] }];
 
@@ -54,7 +56,7 @@ describe('Remote Two Nodes', function () {
     }).timeout(60000);
 
     it('switch test', function (done) {
-        var flow = [{ id: CONFIG_ID, type: "config-node", name: "config-node", port: 9988, driver_name: "node_red" },
+        var flow = [{ id: CONFIG_ID, type: "config-node", name: "config-node", port: 9988, driver_name: "node_red", publish_service: true },
         { id: "s1Out", type: "helper" },
         { id: "s1", type: "switch-node", name: "Switch Node", entity_id: SWITCH_ID, config: CONFIG_ID, area: "test", wires: [["s1Out"]] }];
 
@@ -72,6 +74,19 @@ describe('Remote Two Nodes', function () {
                 nd();
                 done();
             });
+        });
+    }).timeout(60000);
+
+    it('sensor test', function (done) {
+        var flow = [{ id: CONFIG_ID, type: "config-node", name: "config-node", port: 9988, driver_name: "node_red" },
+        { id: "s1", type: "sensor-node", name: "Sensor Node", entity_id: SENSOR_TEMP_1, config: CONFIG_ID, area: "test" }];
+
+        helper.load([nrt_config, nrt_sensor], flow, function () {
+            const sensor = helper.getNode("s1");
+
+            sensor.receive({
+                payload: 5
+            })
         });
     }).timeout(60000);
 });
